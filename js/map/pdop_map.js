@@ -6,6 +6,7 @@ var mymap;
 var controller;
 var baseMaps;
 var selectedTracks = [];
+let acControl;
 function buildSelects(select, trackData) {
     try {
         var Selects = document.getElementById(select);
@@ -22,6 +23,7 @@ function buildSelects(select, trackData) {
   }
 
 document.addEventListener("DOMContentLoaded",async () => {
+  
     if (document.getElementById('mapid')) {
         try {
             mymap = L.map('mapid', {preferCanvas: true}).setView([15, 55], 2);
@@ -85,6 +87,21 @@ document.addEventListener("DOMContentLoaded",async () => {
             }
                    
         })
+
+       
+        $('#but').on('click',function () {
+            if (!$('#mapid').hasClass('on')) {
+
+                $('#mapid').toggleClass('full')
+                $('.midi').toggleClass('op')
+                mymap.invalidateSize();
+            }
+
+            if ($('#mapid').hasClass('on')){
+
+            }
+        })
+
        /* mymap.on('overlayremove', function (e) {
             console.log(e);
             //mymap.fitBounds(e.layer.getBounds());
@@ -98,16 +115,25 @@ document.addEventListener("DOMContentLoaded",async () => {
     })*/
     
   
-        controller = L.control.layers().addTo(mymap);
+        controller = L.control.layers()//.addTo(mymap);
+        acControl =  new L.Control.AccordionLegend({
+                    title: 'Маршруты',
+                    position: 'topright',
+                    content: [],
+        })//.addTo(mymap);
         await $.ajax({
             method: "GET",
             url: "/mapv4/getGPX.php",
             dataType: "json",
             success: async function(data){
                 try {
+                let LAYERS = [];   
                 DataTracks =  data;
                 console.log(data);
                 buildSelects('nameTrack',  Object.keys(data));
+                
+               
+                
                 }
                 catch(e) 
                 {
@@ -129,6 +155,7 @@ function buildMap()   {
             hotlineLayer[hotline].remove(mymap);
         }
         hotlineLayer = [];
+        let LAYERS = []
         if (document.getElementById('mapid')) {
                 let i=0;
                 var selectedTracksTmp = Array.from(document.getElementById('nameTrack').selectedOptions).map(x=>x.innerHTML);
@@ -182,16 +209,39 @@ function buildMap()   {
 
                         })
                         .on('mouseout', function () {})
+                        if (!LAYERS[track]) {LAYERS[track] = []}
+
+                            LAYERS[track].push({'title': '<b>' + track + '</b> ' + gnss,
+                            'layer': hotlineLayer['<b>' + track + '</b> ' + gnss],
+                            'legend': [],
+                            'opacityslider': false})
 
                     }
 
                 }
-            
+                var LAYERS_AND_LEGENDS = [];
+
+                for(let track_name in LAYERS){
+                    LAYERS_AND_LEGENDS.push({
+                        'title': track_name,
+                        layers : LAYERS[track_name]
+                    })
+                }
+                acControl.remove();
+                acControl = new L.Control.AccordionLegend({
+                    title: 'Маршруты',
+                    position: 'topright',
+                    content: LAYERS_AND_LEGENDS,
+                    //content: hotlineLayer
+                }).addTo(mymap);
+                acControl.toggleLayer("<b>Петрозаводск, 2022 г.</b> GLN", 'on')
+               
+                controller.remove(mymap);
+                //controller = L.control.layers(baseMaps, hotlineLayer, { collapsed:true }).addTo(mymap).expand()
+                controller = L.control.layers(baseMaps, null,{ collapsed:true }).addTo(mymap).expand()
             }
-            controller.remove(mymap);
-            //controller = {};
-            controller = L.control.layers(baseMaps, hotlineLayer, { collapsed:true }).addTo(mymap).expand()
-        }
+            }
+       
         catch(e) 
         {
             console.log(`Ошибка '${e.name}': ${e.message}`);

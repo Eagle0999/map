@@ -89,11 +89,11 @@ function MultiselectDropdown(options){
   var config={
     search:true,
     height:'15rem',
-    placeholder:'select',
-    txtSelected:'selected',
-    txtAll:'All',
-    txtRemove: 'Remove',
-    txtSearch:'search',
+    placeholder:'Выбор',
+    txtSelected:'Выбранных маршрутов',
+    txtAll:'Все маршруты',
+    txtRemove: 'Удалить',
+    txtSearch:'Поиск',
     ...options
   };
   function newEl(tag,attrs){
