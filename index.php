@@ -35,7 +35,7 @@
                     <label>Время   DataTracks,hotlineLayer,mymap </label>
                     <select name="times" id="times"  multiselect-search="true" multiple onchange="console.log(Array.from(this.selectedOptions).map(x=>x.innerHTML))" multiselect-hide-x="false">
                     </select-->
-                    <button   type="submit" class="btn btn-light" onclick="buildMap()">Построить маршруты</button>
+                    <button   type="submit" class="btn btn-light" onclick="buildMap()">Показать маршруты</button>
                 </div>
 
                 <div  class='element2'>

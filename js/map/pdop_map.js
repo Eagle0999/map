@@ -130,7 +130,9 @@ document.addEventListener("DOMContentLoaded",async () => {
                 try {
                 
                 DataTracks =  data;
-                DataTracks = JSON.parse(JSON.stringify(DataTracks).replaceAll(/((\(\d+\))|(\.gpx))/g, "").replaceAll(/(GLN)/g, "Глонасс").replaceAll(/(BDS)/g, "Beidou").replaceAll(/(GAL)/g, "Galileo"));
+                //DataTracks = JSON.parse(JSON.stringify(DataTracks).replaceAll(/((\(\d+\))|(\.gpx))/g, "").replaceAll(/(GLN)/g, "Глонасс").replaceAll(/(BDS)/g, "Beidou").replaceAll(/(GAL)/g, "Galileo"));
+                DataTracks = JSON.parse(JSON.stringify(DataTracks).replaceAll(/(\.gpx)/g, "").replaceAll(/(GLN)/g, "Глонасс").replaceAll(/(BDS)/g, "Beidou").replaceAll(/(GAL)/g, "Galileo"));
+
                 //DataTracks = JSON.parse(JSON.stringify(DataTracks).replaceAll(/(\.gpx)/g, ""));
 
                 console.log(DataTracks);
@@ -246,7 +248,13 @@ function buildMap()   {
                     //content: hotlineLayer
                 }).addTo(mymap);
                 acControl.toggleLayer("<b>Петрозаводск, 2022 г.</b> GLN", 'on')
-               
+                document.getElementById('nameTrack').innerHTML = '';
+                $('#nameTrack').prop('selected', false).trigger('chosen:updated');
+
+                //Remove all items
+                $('#nameTrack').html("");    
+                $("#nameTrack").chosen().trigger('chosen:updated');
+            
                 controller.remove(mymap);
                 //controller = L.control.layers(baseMaps, hotlineLayer, { collapsed:true }).addTo(mymap).expand()
                 controller = L.control.layers(baseMaps, null,{ collapsed:true }).addTo(mymap).expand()
