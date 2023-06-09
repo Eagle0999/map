@@ -12,6 +12,7 @@ function buildSelects(select, trackData) {
         var Selects = document.getElementById(select);
         for (let item in trackData) 
         {
+            
             Selects.innerHTML += `<option>${trackData[item]}</option>`;
             Selects.loadOptions();
         }
@@ -125,12 +126,15 @@ document.addEventListener("DOMContentLoaded",async () => {
             method: "GET",
             url: "/mapv4/getGPX.php",
             dataType: "json",
-            success: async function(data){
+            success:  function(data){
                 try {
-                let LAYERS = [];   
+                
                 DataTracks =  data;
-                console.log(data);
-                buildSelects('nameTrack',  Object.keys(data));
+                DataTracks = JSON.parse(JSON.stringify(DataTracks).replaceAll(/((\(\d+\))|(\.gpx))/g, "").replaceAll(/(GLN)/g, "Глонасс").replaceAll(/(BDS)/g, "Beidou").replaceAll(/(GAL)/g, "Galileo"));
+                //DataTracks = JSON.parse(JSON.stringify(DataTracks).replaceAll(/(\.gpx)/g, ""));
+
+                console.log(DataTracks);
+                buildSelects('nameTrack',  Object.keys(DataTracks));
                 
                
                 
@@ -210,8 +214,15 @@ function buildMap()   {
                         })
                         .on('mouseout', function () {})
                         if (!LAYERS[track]) {LAYERS[track] = []}
-
-                            LAYERS[track].push({'title': '<b>' + track + '</b> ' + gnss,
+                        let tmp;
+                        if(track.search(/((Глонасс)|(Beidou)|(GPS)|(Galileo))/g) !=-1)
+                        {
+                            tmp = '<b>' + track + '</b> ';
+                        }
+                        else {
+                            tmp = '<b>' + track + '</b> ' + gnss;
+                        }
+                            LAYERS[track].push({'title': tmp,
                             'layer': hotlineLayer['<b>' + track + '</b> ' + gnss],
                             'legend': [],
                             'opacityslider': false})
